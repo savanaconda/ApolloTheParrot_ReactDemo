@@ -1,0 +1,76 @@
+:root {
+  --apollo-photo-height: 40vmin;
+  --item-size: calc(var(--apollo-photo-height) / 4);
+}
+
+.App {
+  text-align: center;
+  background-color: #282c34;
+}
+
+.Apollo-photo {
+  height: var(--apollo-photo-height);
+  pointer-events: none;
+  padding: 10px;
+}
+
+.Apollo-section {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.Apollo-answer {
+  font-size: calc(var(--apollo-photo-height) * 0.1);
+  color: white;
+  margin-top: 10px;
+  margin: 10px;
+  vertical-align: center;
+}
+
+.Droppable {
+  width: calc(var(--item-size)*0.9);
+  height: calc(var(--item-size)*0.9);
+  margin: 3px;
+  border: 3px solid white;
+  vertical-align: calc(var(--apollo-photo-height) * 0.2);
+}
+
+.Item {
+  width: var(--item-size);
+  height: var(--item-size);
+  margin: 3px;
+  border: 3px solid rgba(184, 183, 202, 0.579);
+  display: inline-block;
+}
+
+.Items-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.App-header {
+  min-height: 20vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
