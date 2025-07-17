@@ -14,6 +14,8 @@ This app lets you give an object to Apollo to identify. He will inspect the obje
 
 To try it out, download this code and run `npm start` in the code directory. This should start up the server and open a browser window at address `http://localhost:3000/` where you can play with app and interact with Apollo.
 
+This app uses [dndkit](https://dndkit.com/) for drag and drop functionality.
+
 Below are additional details on **Create React App**, which I used to help create this app.
 
 ## Getting Started with Create React App
