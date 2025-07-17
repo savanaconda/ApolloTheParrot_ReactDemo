@@ -7,58 +7,62 @@ import shrek1 from './images/shrek1.png';
 import metal1 from './images/metal1.png';
 import glass1 from './images/glass1.png';
 import glass2 from './images/glass2.png';
+import rockAudio from './audio/rock.mp3';
+import metalAudio from './audio/metal.mp3';
+import glassAudio from './audio/glass.mp3';
+import shrekAudio from './audio/shrek.mp3';
 import './App.css';
-import { useState } from 'react';
-import { DndContext } from '@dnd-kit/core';
+import { use, useState } from 'react';
+import { DndContext, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { Draggable } from './Draggable';
 import { Droppable } from './Droppable';
 
 function App() {
 
+  const rock1Name = 'rock1';
+  const rock2Name = 'rock2';
+  const shrek1Name = 'shrek1';
+  const metal1Name = 'metal1';
+  const glass1Name = 'glass1';
+  const glass2Name = 'glass2';
+
   const imageAnswersMap = new Map([
-    [rock1, 'ROCK'],
-    [rock2, 'ROCK'],
-    [shrek1, 'SHREK'],
-    [metal1, 'METAL'],
-    [glass1, 'GLASS'],
-    [glass2, 'GLASS'],
+    [rock1Name, 'ROCK'],
+    [rock2Name, 'ROCK'],
+    [shrek1Name, 'SHREK'],
+    [metal1Name, 'METAL'],
+    [glass1Name, 'GLASS'],
+    [glass2Name, 'GLASS'],
   ]);
 
-  const draggableRock1 = (
-    <Draggable id="rock1">
-      <Icon imageSource={rock1} imageName="rock1" />
-    </Draggable>
-  );
-  const draggableRock2 = (
-    <Draggable id="rock2">
-      <Icon imageSource={rock2} imageName="rock2" />
-    </Draggable>
-  );
-  const draggableShrek1 = (
-    <Draggable id="shrek1">
-      <Icon imageSource={shrek1} imageName="shrek1" />
-    </Draggable>
-  );
-  const draggableGlass1 = (
-    <Draggable id="glass1">
-      <Icon imageSource={glass1} imageName="glass1" />
-    </Draggable>
-  );
-  const draggableGlass2 = (
-    <Draggable id="glass2">
-      <Icon imageSource={glass2} imageName="glass2" />
-    </Draggable>
-  );
-  const draggableMetal1 = (
-    <Draggable id="metal1">
-      <Icon imageSource={metal1} imageName="metal1" />
+  const audioMap = new Map([
+    [rock1Name, rockAudio],
+    [rock2Name, rockAudio],
+    [shrek1Name, shrekAudio],
+    [metal1Name, metalAudio],
+    [glass1Name, glassAudio],
+    [glass2Name, glassAudio],
+  ]);
+
+  const DraggableItem = ({ id, imageSource, imageName }) => (
+    <Draggable id={id}>
+      <Icon imageSource={imageSource} imageName={imageName} />
     </Draggable>
   );
 
-  const [parent, setParent] = useState(null);
+  const [objects, setObjects] = useState(new Map([
+    [rock1Name, DraggableItem({ id: rock1Name, imageSource: rock1, imageName: rock1Name })],
+    [rock2Name, DraggableItem({ id: rock2Name, imageSource: rock2, imageName: rock2Name })],
+    [shrek1Name, DraggableItem({ id: shrek1Name, imageSource: shrek1, imageName: shrek1Name })],
+    [glass1Name, DraggableItem({ id: glass1Name, imageSource: glass1, imageName: glass1Name })],
+    [glass2Name, DraggableItem({ id: glass2Name, imageSource: glass2, imageName: glass2Name })],
+    [metal1Name, DraggableItem({ id: metal1Name, imageSource: metal1, imageName: metal1Name })],
+  ]));
+
   const [apolloPhoto, setApolloPhoto] = useState(defaultParrot);
-  const [answer, setAnswer] = useState('');
-  const [currentItem, setCurrentItem] = useState(null);
+  const [answerText, setAnswerText] = useState('');
+  const [currentDroppedItemId, setCurrentDroppedItemId] = useState(null);
+
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
@@ -71,19 +75,20 @@ function App() {
         <section className="Apollo-section">
           <img src={apolloPhoto} className="Apollo-photo" alt="parrot" />
           <Droppable id="droppable">
-            {parent === "droppable" ? currentItem : 'Drop here'}
+            {console.log(`Current dropped item ID: ${currentDroppedItemId}`)}
+            {console.log(`Current dropped item ID: ${objects.get(currentDroppedItemId)}`)}
+            {currentDroppedItemId === null ? 'Drop here' : objects.get(currentDroppedItemId)}
           </Droppable>
-          <div className="Apollo-answer">{answer}</div>
+          <div className="Apollo-answer">{answerText}</div>
         </section>
         <section>
           <h3> Items:</h3>
           <section className="Items-section">
-            {!parent ? draggableRock1 : null}
-            {!parent ? draggableRock2 : null}
-            {!parent ? draggableShrek1 : null}
-            {!parent ? draggableGlass1 : null}
-            {!parent ? draggableGlass2 : null}
-            {!parent ? draggableMetal1 : null}
+            {objects.values().map((object, index) => (
+              < div key={index} className="object-box" >
+                {object}
+              </div>
+            ))}
           </section>
         </section>
 
@@ -98,16 +103,24 @@ function App() {
           </a>
         </header>
       </div >
-    </DndContext>
+    </DndContext >
   );
 
   function handleDragEnd({ active, over }) {
-    // setCurrentItem(active ? active : null);
-    setParent(over ? over.id : null);
+    setAnswerText(''); // Clear previous answer
+    setCurrentDroppedItemId(over ? active.id : null);
+
     setTimeout(function () {
       setApolloPhoto(over ? leaningParrot : defaultParrot);
+      setTimeout(function () {
+        setApolloPhoto(defaultParrot);
+        setAnswerText(over ? imageAnswersMap.get(active.id) : '');
+        if (over) {
+          let audio = new Audio(audioMap.get(active.id));
+          audio.play();
+        }
+      }, 1000);
     }, 1000);
-    setAnswer(over ? imageAnswersMap.get(over.id) : '');
   }
 
   function Icon(props) {
